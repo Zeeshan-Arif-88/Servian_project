@@ -128,6 +128,8 @@ resource "aws_security_group" "project-security-group" {
 resource "aws_network_interface" "project-network-interface" {
 
   subnet_id = aws_subnet.project-subnet.id
+  
+  # The private IP of the host is 10.0.1.50.
   private_ips = [ "10.0.1.50" ]
   security_groups = [aws_security_group.project-security-group.id]
 
@@ -137,3 +139,17 @@ resource "aws_network_interface" "project-network-interface" {
   }
   
 }
+
+# Assign an elastic IP to the instance.
+resource "aws_eip" "project-elastic-ip" {
+
+  # Elastic IP is part of my VPC.
+  vpc = true
+
+  network_interface = aws_network_interface.project-network-interface.id
+  
+  # Elastic IP assigned to instance is 10.0.1.50.
+  associate_with_private_ip = "10.0.1.50"
+  
+}
+
