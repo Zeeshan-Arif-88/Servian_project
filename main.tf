@@ -9,17 +9,6 @@ provider "aws" {
   
 }
 
-# The aws ec2 instance details are as below.
-resource "aws_instance" "project-server" {
-
-    ami = "ami-0567f647e75c7bc05"
-    instance_type = "t2.micro"
-    tags = {
-        Name = "project-server"
-    }
-  
-}
-
 # The aws VPC details are as below.
 resource "aws_vpc" "project-vpc" {
     cidr_block = "10.0.0.0/16"
@@ -49,7 +38,7 @@ resource "aws_route_table" "project-route-table" {
   # Route all IPV6 traffic to default gateway.
   route {
     ipv6_cidr_block        = "::/0"
-    egress_only_gateway_id = aws_internet_gateway.project-gateway.id
+    gateway_id = aws_internet_gateway.project-gateway.id
   }
 
   tags = {
@@ -132,11 +121,6 @@ resource "aws_network_interface" "project-network-interface" {
   # The private IP of the host is 10.0.1.50.
   private_ips = [ "10.0.1.50" ]
   security_groups = [aws_security_group.project-security-group.id]
-
-    attachment {
-    instance     = aws_instance.project-server.id
-    device_index = 1
-  }
   
 }
 
@@ -151,5 +135,35 @@ resource "aws_eip" "project-elastic-ip" {
   # Elastic IP assigned to instance is 10.0.1.50.
   associate_with_private_ip = "10.0.1.50"
   
+  # NOTE: Elastic IP needs to be created AFTER creating internet gateway.
+  #       because a public IP needs to have agateway first.
+  #       This creates a dependency of the elastic IP on the gateway.
+
+  depends_on = [
+    aws_internet_gateway.project-gateway
+  ]
 }
 
+# The aws ec2 instance details are as below.
+resource "aws_instance" "project-server" {
+
+    ami = "ami-0567f647e75c7bc05"
+    instance_type = "t2.micro"
+
+    # Instance avialablity zone must be the same as the subnet's availablity zone.
+    availability_zone = "ap-southeast-2a"
+
+    key_name = "project-key"
+
+    network_interface {
+      
+      device_index = 0
+
+      network_interface_id = aws_network_interface.project-network-interface.id
+
+    }
+    tags = {
+        Name = "project-server"
+    }
+  
+}
