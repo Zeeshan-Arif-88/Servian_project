@@ -1,4 +1,4 @@
-
+# Begin Infrastructure as a Code.
 
 # Setting a variable for the AWS access key.
 variable "access-key" {
@@ -189,3 +189,5 @@ resource "aws_instance" "project-server" {
     }
   
 }
+
+# End Infrastructure as a Code.
