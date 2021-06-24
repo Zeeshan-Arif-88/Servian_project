@@ -68,6 +68,8 @@ resource "aws_route_table" "project-route-table" {
 resource "aws_subnet" "project-subnet" {
     vpc_id = aws_vpc.project-vpc.id
     cidr_block = "10.0.1.0/24"
+    
+    # Paste your availability zone below.
     availability_zone = "ap-southeast-2a"
     tags = {
       "Name" = "project-subnet"
@@ -148,11 +150,11 @@ resource "aws_eip" "project-elastic-ip" {
 
   network_interface = aws_network_interface.project-network-interface.id
   
-  # Elastic IP assigned to instance is 10.0.1.50.
+  # Elastic IP is associated with the private IP 10.0.1.50.
   associate_with_private_ip = "10.0.1.50"
   
   # NOTE: Elastic IP needs to be created AFTER creating internet gateway.
-  #       because a public IP needs to have agateway first.
+  #       because a public IP needs to have a gateway first.
   #       This creates a dependency of the elastic IP on the gateway.
 
   depends_on = [
@@ -163,7 +165,11 @@ resource "aws_eip" "project-elastic-ip" {
 # The aws ec2 instance details are as below.
 resource "aws_instance" "project-server" {
 
+    
+    # Paste the AMI ID of the OS that you prefer below. I would recommend Ubuntu.
     ami = "ami-0567f647e75c7bc05"
+
+    # Paste the type and size of the instance (that you prefer) below.
     instance_type = "t2.micro"
 
     # Instance avialablity zone must be the same as the subnet's availablity zone.
