@@ -1,11 +1,27 @@
+
+
+# Setting a variable for the AWS access key.
+variable "access-key" {
+
+  description = "The access key of the AWS account."
+  type = string
+}
+
+
+# Setting a variable for the AWS secret key.
+variable "secret-key" {
+
+  description = "The secret key of the AWS account."
+  type = string
+}
 provider "aws" {
     
     # Paste your aws region below.
     region = "ap-southeast-2"
-    # Paste your aws account access key below.
-    access_key = "AKIATUMG22BE2M7NOK6S"
-    # Paste your aws secret key below.
-    secret_key = "OHPZRVv91GFzbessqeA4t54hv+EhuilhnrqJUtCB"
+    
+    access_key = var.access-key
+    
+    secret_key = var.secret-key
   
 }
 
